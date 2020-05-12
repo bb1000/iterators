@@ -1,57 +1,64 @@
-<script type="text/javascript"
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-# Introduction to iterators
+<style>
+.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<link rel="stylesheet" href="/js/highlight/styles/gruvbox-light.css">
+<script src="/js/highlight/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 
-## Olav Vahtras
+# Iterators
 
-KTH
+BB1000 Programming in Python
 
 ---
 
 layout: false
 
-## Iterators and generators
 
-### Iterators
+* [Iterables, iterators and generators](#3)
+  + [Iterable vs iterator](#6)
+  + [Generators](#9)
+  + [Summary](#14)
 
-* objects that support iteration protocol
-* i.e. to be used in for loops
 
-#### Some well-known iterators
+---
 
-* A list
+# Iterables, iterators and generators
 
-```
+##Examples
+
+* objects that can be used in for loops
+
+
+### A list
+
+~~~python
 >>> li = range(3)
 >>> for i in li:
 ...     print(i, end=" ")
 0 1 2 
 
-```
-**Note**
+~~~
 
-* In python2 *range* return a list of a given size
-* In python2 *xrange* generates a sequence one by one
-* In python3 *range* has the same meaning as xrange 
 
----
-
-#### Dictionaries support iteration
+### Dictionary
 
 * The loop variable is the key of the key-value pair
 
-```
+```python
 >>> dict = {'a':1, 'b':2}
->>> for k in dict: #doctest: +SKIP
+>>> for k in dict:
 ...     print(k, dict[k])
 a 1
 b 2
 
 ```
---
+---
 
-#### Strings support iteration
+### String
 
 ```
 >>> str = 'abc'
@@ -62,9 +69,8 @@ b
 c
 
 ```
----
 
-#### File objects  support iteration
+### File objects
 
 
 <!--
@@ -73,13 +79,13 @@ c
 
 -->
 
-    #123
+    #123.txt
     one
     two
     three
 
 ```
->>> for row in open('123'):
+>>> for row in open('123.txt'):
 ...     print(row, end="")
 one
 two
@@ -88,7 +94,8 @@ three
 ```
 ---
 
-### Consider the list
+## Iterable vs iterator
+
 
 ```
 >>> li = [0, 1, 2]
@@ -97,64 +104,69 @@ three
 
 ```
 
-* Lists have an `__iter__` method
-
+If you can call `iter` with an object that object it is *iterable*
 
 ```
->>> li_iter = li.__iter__()
->>> print(type(li_iter))
+>>> li_iter = iter(li)
+>>> type(li_iter)
 <class 'list_iterator'>
 
 ```
-* `__iter__` returns an object with a `__next__` method
+
+`iter` will return an object that supports `next` - an *iterator*
+
 
 ```
->>> print(li_iter.__next__())
+>>> next(li_iter)
 0
->>> print(li_iter.__next__())
+>>> next(li_iter)
 1
->>> print(li_iter.__next__())
+>>> next(li_iter)
 2
->>> print(li_iter.__next__())
+>>> next(li_iter)
 Traceback (most recent call last):
-  File "iter.py", line 20, in <module>
-    print(li_iter.next())
+  File "<stdin>", line 1, in <module>
 StopIteration
 
 ```
 
-* Illustrates what happens behind the scenes in a for loop
+Illustrates what happens behind the scenes in a for loop
 
 ---
 
 ### Objects supporting iteration
 
-* have a method `__iter__()` which returns an iterable object
-* the iterable has a method `next()` producing the next sequence value
+* iterables have a method `__iter__()` which returns an iterator
+* the iterator has a method `__next__()` producing the next sequence value
 * going beyond the last value raises a `StopIteration` - the for loop quits
 
 ---
 
 ### Defining your own iterator
 
-```
->>> class Counter(object):
-...     def __init__(self, size):
-...         print("__init__:", size)
-...         self.size = size
-...         self.start = 0
-...
-...     def __iter__(self):
-...         print("__iter__:", self.size)
-...         return self
-...
-...     def __next__(self):
-...         if self.start < self.size:
-...             self.start = self.start + 1
-...             return self.start
-...         raise StopIteration
+~~~python
+class Counter:
+    def __init__(self, size):
+        print("__init__:", size)
+        self.size = size
+        self.start = 0
 
-```
+    def __iter__(self):
+        print("__iter__:", self.size)
+        return CounterIter(self.start, self.size)
+
+class CounterIter:
+
+    def __init__(self, start, size):
+        self.start = start
+        self.size = size
+
+    def __next__(self):
+        if self.start < self.size:
+            self.start = self.start + 1
+            return self.start
+        raise StopIteration
+~~~
 ```
 >>> c = Counter(3)
 __init__: 3
@@ -162,12 +174,11 @@ __init__: 3
 ...     print(num, end=" ")
 __iter__: 3
 1 2 3 
-
 ```
 
 ---
 
-### Generators
+## Generators
 
 
 * Functions that contain the  yield statment
@@ -180,15 +191,19 @@ __iter__: 3
 ```
 >>> def f(n):
 ...    return n
->>> print(type(f), type(f(1)))
-<class 'function'> <class 'int'>
+>>> type(f)
+<class 'function'>
+>>> type(f(1))
+<class 'int'>
 
 ```
 ```
 >>> def g(n):
 ...    yield n
->>> print(type(g), type(g(1)))
-<class 'function'> <class 'generator'>
+>>> type(g)
+<class 'function'>
+>>> type(g(1))
+<class 'generator'>
 
 ```
 
@@ -205,10 +220,11 @@ __iter__: 3
 ```
 ```
 >>> g2=g(2)
->>> g2.__next__()
+>>> next(g2)
 enter g with 2
 2
->>> g2.__next__() #doctest: +SKIP
+>>> next(g2)
+after yield
 Traceback (most recent call last):
 ...
 StopIteration
@@ -234,36 +250,25 @@ StopIteration
 ...     print('after while')
 
 ```
-```
->>> g2=g(2)
 
 ```
---
-```
+>>> g2=g(2)
 >>> next(g2)
 enter g with  2
 0
-
-```
---
-```
 >>> next(g2)
 after yield
 1
-
-```
---
-
-```
->>> g2.next() #doctest: +SKIP
+>>> g2.next()
 after yield
 after while
 Traceback (most recent call last):
   File "gen.py", line 42, in <module>
     print(g2.next())
 StopIteration
-
 ```
+
+---
 
 ### Iterator in for loop
 
@@ -296,23 +301,25 @@ after while
 
 ```
 
+---
+
 ### Convert to list
 
-```
 It is always possible to convert a generator to a list
 
 
 ```
->>> print(list(fib(100)))
+>>> list(fib(100))
 [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
 
 ```
 
 ---
 
-### Summary
+## Summary
 
 * Several common types support iteration (list, dict, file, str)
-* Objects support iteration have an `__iter__` function returning an iterable
-* The iterables have a `next` method that steps through some sequence
+* Objects that support iteration have an `__iter__` method returning an
+  iterator
+* The iterators have a `next` method that steps through some sequence
 * Generators are functions with a `yield` statement and work like iterators
