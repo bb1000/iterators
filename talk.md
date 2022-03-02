@@ -1,14 +1,3 @@
-<style>
-.centered {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-</style>
-<link rel="stylesheet" href="/js/highlight/styles/gruvbox-light.css">
-<script src="/js/highlight/highlight.pack.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-
 # Iterators
 
 BB1000 Programming in Python
@@ -18,13 +7,12 @@ BB1000 Programming in Python
 layout: false
 
 
-# TOC
+# Content
 
 * [Iterables, iterators and generators](#3)
   + [Iterable vs iterator](#5)
   + [Generators](#8)
   + [Summary](#13)
-
 
 
 ---
@@ -39,7 +27,7 @@ layout: false
 ### A list
 
 ~~~python
->>> li = range(3)
+>>> li = [0, 1, 2]
 >>> for i in li:
 ...     print(i, end=" ")
 0 1 2 
@@ -139,9 +127,25 @@ Illustrates what happens behind the scenes in a for loop
 
 ### Objects supporting iteration
 
-* iterables have a method `__iter__()` which returns an iterator
-* the iterator has a method `__next__()` producing the next sequence value
-* going beyond the last value raises a `StopIteration` - the for loop quits
+What does iter vs next (built-in function) do? Roughly it delegates
+
+~~~
+#What the builtin iter roughly does
+def iter(object):
+    return object.__iter__()
+~~~
+
+~~~
+#What the builtin next roughly does
+def next(object):
+    return object.__next__()
+~~~
+
+* iterables are defined by classes with an `__iter__` method, which which
+  should return an iterator
+* iterators are defined by classes with a `__next__` method, producing the
+  next value of the sequence
+* the for loop will stop when a `StopIteration` exception is encountered
 
 ---
 
@@ -324,5 +328,5 @@ It is always possible to convert a generator to a list
 * Several common types support iteration (list, dict, file, str)
 * Objects that support iteration have an `__iter__` method returning an
   iterator
-* The iterators have a `next` method that steps through some sequence
+* The iterators have a `[__next__](__next__)` method that steps through some sequence
 * Generators are functions with a `yield` statement and work like iterators
