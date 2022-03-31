@@ -6,20 +6,9 @@ BB1000 Programming in Python
 
 layout: false
 
+## Iterables, iterators and generators
 
-# Content
-
-* [Iterables, iterators and generators](#3)
-  + [Iterable vs iterator](#5)
-  + [Generators](#8)
-  + [Summary](#13)
-
-
----
-
-# Iterables, iterators and generators
-
-##Examples
+## Examples
 
 * objects that can be used in for loops
 
