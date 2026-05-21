@@ -12,7 +12,6 @@ layout: false
 
 * objects that can be used in for loops
 
-
 ### A list
 
 ~~~python
@@ -55,7 +54,7 @@ c
 
 <!--
 >>> import subprocess
->>> n = subprocess.call("/bin/echo 'one\ntwo\nthree' > 123", shell=True)
+>>> n = subprocess.call("/bin/echo 'one\ntwo\nthree' > 123.txt", shell=True)
 
 -->
 
@@ -141,36 +140,39 @@ def next(object):
 ### Defining your own iterator
 
 ~~~python
-class Counter:
-    def __init__(self, size):
-        print("__init__:", size)
-        self.size = size
-        self.start = 0
+>>> class Counter:
+...     def __init__(self, size):
+...         print("__init__:", size)
+...         self.size = size
+...         self.start = 0
+... 
+...     def __iter__(self):
+...         print("__iter__:", self.size)
+...         return CounterIter(self.start, self.size)
+... 
+>>> class CounterIter:
+... 
+...     def __init__(self, start, size):
+...         self.start = start
+...         self.size = size
+... 
+...     def __next__(self):
+...         if self.start < self.size:
+...             self.start = self.start + 1
+...             return self.start
+...         raise StopIteration
 
-    def __iter__(self):
-        print("__iter__:", self.size)
-        return CounterIter(self.start, self.size)
-
-class CounterIter:
-
-    def __init__(self, start, size):
-        self.start = start
-        self.size = size
-
-    def __next__(self):
-        if self.start < self.size:
-            self.start = self.start + 1
-            return self.start
-        raise StopIteration
 ~~~
-```
+
+~~~
 >>> c = Counter(3)
 __init__: 3
 >>> for num in c:
 ...     print(num, end=" ")
 __iter__: 3
 1 2 3 
-```
+
+~~~
 
 ---
 
@@ -184,7 +186,7 @@ __iter__: 3
 
 ### function vs. generator
 
-```
+~~~
 >>> def f(n):
 ...    return n
 >>> type(f)
@@ -192,8 +194,10 @@ __iter__: 3
 >>> type(f(1))
 <class 'int'>
 
-```
-```
+~~~
+
+~~~
+
 >>> def g(n):
 ...    yield n
 >>> type(g)
@@ -201,31 +205,32 @@ __iter__: 3
 >>> type(g(1))
 <class 'generator'>
 
-```
+~~~
 
 ---
 
 ### Example
 
-```
+~~~
 >>> def g(n):
 ...     print('enter g with',n)
 ...     yield n
 ...     print('after yield')
 
-```
-```
+~~~
+
+~~~
 >>> g2=g(2)
 >>> next(g2)
 enter g with 2
 2
 >>> next(g2)
-after yield
 Traceback (most recent call last):
 ...
 StopIteration
 
-```
+
+~~~
 
 * So: this function appears to pause at the yield statement after returning the value and continue from there the next time the next() method is called...
 
@@ -235,7 +240,7 @@ StopIteration
 
 ### Example
 
-```
+~~~
 >>> def g(n):
 ...     print('enter g with ',n)
 ...     i=0
@@ -245,9 +250,9 @@ StopIteration
 ...         i += 1
 ...     print('after while')
 
-```
+~~~
 
-```
+~~~
 >>> g2=g(2)
 >>> next(g2)
 enter g with  2
@@ -255,14 +260,12 @@ enter g with  2
 >>> next(g2)
 after yield
 1
->>> g2.next()
-after yield
-after while
+>>> next(g2)
 Traceback (most recent call last):
-  File "gen.py", line 42, in <module>
-    print(g2.next())
+...
 StopIteration
-```
+
+~~~
 
 ---
 
